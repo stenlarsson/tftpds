@@ -26,6 +26,7 @@ all: $(TARGET).ds.gba
 $(TARGET).ds.gba	: $(TARGET).nds gbamenu/gbamenu_mb.gba loader/loader.bin
 	dsbuild $(TARGET).nds -o temp.ds.gba -l loader/loader.bin
 	cat temp.ds.gba gbamenu/gbamenu_mb.gba > $@
+	rm temp.ds.gba
 	gbafix $@
 
 #---------------------------------------------------------------------------------

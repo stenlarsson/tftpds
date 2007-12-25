@@ -5,7 +5,8 @@
 #define min(x, y) ((x)<=(y)?(x):(y))
 
 #define SRAM_START ((u8*)0x0A000000)
-#define SRAM_END ((u8*)0x0A03FFFF)
+#define SRAM_END ((u8*)0x0A03FFFF) //256KB
+//#define SRAM_END ((u8*)0x0A010000) //64KB
 
 SramFile::SramFile(const char* filename, bool write)
 :	filePtr(SRAM_START),
@@ -36,6 +37,7 @@ int SramFile::Read(void* dest, int length)
 
 	u8* writePtr = (u8*)dest;
 	u8* endPtr = min(filePtr + length, SRAM_END+1);
+
 	while(filePtr != endPtr)
 	{
 		*writePtr++ = *filePtr++;

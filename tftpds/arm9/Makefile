@@ -40,8 +40,9 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -mno-fpu -Wl,-Map,$(notdir $*.map)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
+# added libfat - Smiths
 #---------------------------------------------------------------------------------
-LIBS	:= -lfwgui -ldswifi9 -lnds9
+LIBS	:= -lfat -lfwgui -ldswifi9 -lnds9
  
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

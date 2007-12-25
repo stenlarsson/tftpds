@@ -6,6 +6,13 @@
 #include <stdarg.h>
 #include <errno.h>
 
+//Fat support - Smiths
+#include <fat.h>
+//SRAM Stuff again
+#define SRAM_START ((u8*)0x0A000000)
+#define SRAM_END ((u8*)0x0A03FFFF) //256KB
+#include "sramfile.h"
+
 #include <dswifi9.h>
 
 #include <driver.h>
@@ -13,6 +20,7 @@
 #include "tftpserver.h"
 #include "cartlib.h"
 #include "bootdialog.h"
+
 
 BootDialog* dialog = NULL;
 
@@ -52,6 +60,7 @@ extern "C" {
 		Wifi_Sync();
 	}
 }
+
 
 // function used by our own server for timeouts
 void ResetTimer()
@@ -311,9 +320,13 @@ int main()
 	irqInit();
 	irqEnable(IRQ_VBLANK); // needed by swiWaitForVBlank()
 
+	fatInitDefault(); // initialize FAT - Smiths
+	
 	FwGui::Driver gui;
 	
-	printf("tftpds v2.5\n");
+	printf("tftpds v2.5-sr\n");
+	printf("-----------\n");
+	printf("Press SELECT to back up SRAM Bank 1\n");
 	printf("-----------\n");
 
 	try
@@ -354,6 +367,11 @@ int main()
 				{
 					TcpSendTest();
 				}
+				//Back up SRAM Bank 1 with SELECT - Smiths
+				if(keysDown() & KEY_SELECT)
+				{
+					BackupSRAM();
+				}
 				swiWaitForVBlank();
 			}
 
@@ -361,6 +379,8 @@ int main()
 			dialog->RefreshButtons();
 			dialog->Repaint();
 		}
+		
+
 	}
 	catch(const char* exception)
 	{
@@ -372,3 +392,26 @@ int main()
 		swiWaitForVBlank();
 	}
 }
+
+//Get that first 64KB! - Smiths
+void BackupSRAM() {
+
+FILE * savedata = fopen ("fat1:/bank1.sav", "wb");
+printf("Backing up Bank 1\n");
+u8* start = SRAM_START; //Beginning of SRAM
+u8* bank1 = SRAM_START+65535; //64KB = bank1 (rest need bank switching I believe)
+u8* end = SRAM_END; //unused, but eventually (hopefully) map to end of SRAM for proper 256KB dump
+char strbuffer[8]; //only likes to work in blocks of 8 (1 byte at a time!)
+
+while (start < bank1 - 1) {
+	VisolyModePreamble (); //Don't know if needed, FLinker has it though
+	memcpy(strbuffer, start, sizeof(strbuffer));
+	fwrite((u8*)strbuffer, 1, sizeof(strbuffer), savedata); //1 byte at a time, whee!
+	start = start+8; //next byte, please
+	}
+
+fclose (savedata);
+printf("Done!\n");
+printf("File: bank1.sav in root of Slot-1 Device\n");
+}
+

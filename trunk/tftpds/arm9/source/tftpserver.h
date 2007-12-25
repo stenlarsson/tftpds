@@ -14,14 +14,13 @@ public:
 private:
 	void ReceiveFile();
 	void SendFile();
-
 	int ReceiveMsg(void* buffer);
 	void SendDataMsg(void* buffer, int length);
 	void SendAck(int block);
 	void SendError(const char* error);
 	void ParseOptions(const char* options, int length);
 	void SendOAck();
-
+	
 	int sock;
 	struct sockaddr_in remote;
 	int timeouts;

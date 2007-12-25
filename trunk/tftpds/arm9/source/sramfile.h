@@ -1,6 +1,7 @@
 #pragma once
 
 #include "file.h"
+void BackupSRAM();
 
 class SramFile : public File
 {

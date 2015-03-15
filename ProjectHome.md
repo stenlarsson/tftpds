@@ -1,0 +1,1 @@
+tftpds is a Nintendo DS application that recieves a file over the wireless network and programs your Flash Advance Pro flash cart inserted in the GBA slot. It can then boot .ds.gba and .gba-files. It can also read/write sram.
